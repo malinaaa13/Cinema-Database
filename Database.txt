@@ -1,0 +1,709 @@
+
+PROIECT BAZE DE DATE
+Gestionarea unei rețele de cinematografe
+
+
+
+
+CUPRINS
+1. Descrierea problemei 
+2.Schema bazei de date
+3.Comenzi SQL creare tabele si inserare valori 
+4.1.Comenzi de actualizare
+4.2.Comenzi cu joncțiuni 
+4.3. Comenzi grupări 
+4.4.Comenzi cu subcereri
+
+
+
+
+
+
+
+
+
+
+
+
+1.Descrierea problemei
+Proiectul urmărește o bază de date destinată gestionării complete a activităților unui lanț de cinematografe, care include proiecția filmelor, vânzarea biletelor, gestionarea angajaților și a locațiilor, precum și interacțiunea cu clienții. Scopul bazei de date este de a oferi o infrastructură eficientă pentru a organiza și a urmări toate aspectele legate de operațiunile cinematografului.
+
+Principalele componente ale activității economice includ:
+•	Proiecția Filmelor: Filmele disponibile pentru vizionare sunt stocate și gestionate în baza de date, incluzând detalii precum titlul, genul, durata și descrierea fiecărui film. Aceste filme sunt alocate sălilor de cinema, în funcție de locație și disponibilitate.
+•	Vânzarea Biletele: Baza de date permite înregistrarea fiecărei vânzări de bilete, inclusiv detalii despre filmul ales, prețul și cantitatea de bilete vândute, precum și datele clienților care achiziționează biletele. Acest lucru ajută la urmărirea veniturilor și la gestionarea stocurilor de bilete disponibile.
+•	Gestionarea Personalului: Informațiile despre angajați sunt gestionate într-un sistem centralizat. 
+•	Gestionarea Locațiilor și Sălilor: Locațiile cinematografelor, precum și sălile de proiecție din fiecare locație, sunt înregistrate și gestionate. Fiecare sală este alocată unui film specific, iar detaliile de localizare și capacitate sunt ușor de accesat.
+
+2.Schema bazei de date
+
+
+
+
+
+3.Comenzi SQL
+
+
+1.Crearea tabelelor 
+CREATE TABLE FILME
+(
+id_film NUMBER(4) CONSTRAINT pk_id_film PRIMARY KEY,
+denumire_film VARCHAR(35),
+gen VARCHAR(20),
+descriere VARCHAR(400),
+durata NUMBER(4)
+);
+ 
+
+CREATE TABLE LOCATII
+(
+id_locatie NUMBER(4) CONSTRAINT pk_id_locatie PRIMARY KEY,
+adresa VARCHAR(40),
+oras VARCHAR(25),
+cod_postal NUMBER(12)
+);
+ 
+
+CREATE TABLE FUNCTII 
+(
+id_functie NUMBER(4) CONSTRAINT pk_id_functie PRIMARY KEY,
+denumire_functie VARCHAR(20)
+);
+ 
+
+CREATE TABLE ANGAJATI_m
+(
+id_ang NUMBER(4) CONSTRAINT pk_angajati_m PRIMARY KEY,
+nume_angajat VARCHAR(20),
+prenume_angajat VARCHAR(20),
+data_angajarii DATE,
+id_locatie NUMBER(4) CONSTRAINT fk_locatie_ang REFERENCES LOCATII(id_locatie),
+id_functie NUMBER(4) CONSTRAINT fk_functie REFERENCES FUNCTII(id_functie)
+);
+ 
+
+CREATE TABLE SALI
+(
+id_sala NUMBER(4) CONSTRAINT pk_id_sala PRIMARY KEY,
+id_locatie NUMBER(4) CONSTRAINT fk_locatie REFERENCES LOCATII(id_locatie),
+id_film NUMBER(4) CONSTRAINT fk_film REFERENCES FILME(id_film)
+);
+
+ 
+   
+CREATE TABLE CLIENTI 
+(
+id_client NUMBER(4) CONSTRAINT pk_id_clienti PRIMARY KEY,
+nume_client VARCHAR(20),
+prenume_client VARCHAR(20)
+);
+ 
+
+CREATE TABLE BILETE 
+(
+id_bilet NUMBER(4) CONSTRAINT pk_id_bilet PRIMARY KEY,
+pret NUMBER(4,2),
+cantitate NUMBER(3),
+id_film NUMBER(4) CONSTRAINT fk_film_bilet REFERENCES FILME(id_film),
+id_client NUMBER(4) CONSTRAINT fk_id_client REFERENCES CLIENTI(id_client)
+);
+ 
+
+2.Alter table
+--modificare nume tabela
+alter table angajati_m rename to angajati;
+ 
+--modificare nume_angajat
+alter table angajati
+modify
+(
+nume_angajat varchar2(30) not null
+);
+ 
+
+--modificare cod_postal
+alter table locatii
+modify
+(cod_postal number(12,0)  not null);
+  
+
+
+3.Drop table
+--stergere tabel filme si anularea comenzii de stergere
+drop table filme cascade constraints;
+
+flashback table filme to before drop;
+
+Adaugarea datelor 
+--adaugare filme
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (101,'Rebecca','Mistery','Un thriller gotic captivant, Rebecca (1940) urmărește o tânără naivă care descoperă adevăruri tulburătoare despre Rebecca, prima soție a soțului ei.',130)
+
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (102, 'The Grand Budapest Hotel', 'Comedie', 
+'O comedie plină de stil despre prietenie, furt și aventuri într-un hotel celebru.', 
+99);
+
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (103, 'Shutter Island', 'Thriller', 
+'Un detectiv investighează dispariția unei paciente de pe o insulă izolată, plină de secrete.', 
+138);
+
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (104, 'The Worst Person in the World', 'Dramă', 
+'O explorare a iubirii și identității prin ochii unei tinere ce navighează haosul vieții moderne.', 
+128);
+
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (105, 'Inside Out', 'Animație', 
+'O fetiță se confruntă cu emoții contradictorii pe măsură ce se adaptează la o schimbare majoră în viața ei, iar emoțiile sale interne prind viață într-o aventură plină de învățăminte.', 
+95);
+
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (106, 'Before Sunrise', 'Dramă/Romantic', 
+'Două persoane se întâlnesc întâmplător într-un tren și petrec o noapte în Viena, explorând viața și iubirea.', 
+101);
+
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (107, 'Arrival', 'Sci-Fi/Drama', 
+'O lingvistă este chemată să comunice cu extratereștri veniți pe Pământ, descoperind secrete despre limbaj și timp.', 
+116);
+
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (108, 'Requiem for a Dream', 'Dramă', 
+'O poveste cutremurătoare despre dependență și visuri distruse, urmărind patru personaje care se confruntă cu consecințele alegerilor lor.', 
+102);
+
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (109, 'The Butterfly Effect', 'Sci-Fi/Thriller', 
+'Un tânăr descoperă abilitatea de a călători în trecut, dar fiecare schimbare aduce consecințe neașteptate și întunecate.', 
+113);
+       
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (110, 'Little Miss Sunshine', 'Comedie/Dramă', 
+'O familie disfuncțională pornește într-o călătorie plină de peripeții pentru a-și susține fiica la un concurs de frumusețe.', 
+101);
+  
+INSERT INTO FILME (id_film, denumire_film, gen, descriere, durata)
+VALUES (111, 'Life is Beautiful', 'Dramă/Comedie', 
+'O poveste emoționantă despre iubire și sacrificiu, în care un tată își protejează fiul de ororile războiului prin puterea imaginației.', 
+116);
+ 
+
+
+--adaugare locatii
+
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (1, 'Str. Mihai Eminescu 10', 'București', 010403);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal)
+VALUES (2, 'Bd. Revoluției 22', 'Timișoara', 300456);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (3, 'Str. Cuza Vodă 15', 'Iași', 700063);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (4, 'Str. Unirii 30', 'Cluj-Napoca', 400098);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (5, 'Bd. Ștefan cel Mare 5', 'Brașov', 500123);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (6, 'Str. Horea 12', 'Sibiu', 550002);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (7, 'Str. Gheorghe Doja 18', 'Oradea', 410215);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal)
+VALUES (8, 'Str. Independenței 8', 'Constanța', 900243);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (9, 'Str. Libertății 22', 'Craiova', 200456);
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (10, 'Str. Tudor Vladimirescu 17', 'Arad', 310013);
+
+--adaugare functii
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (1, 'Manager');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (2, 'Asistent');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (3, 'Director');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (4, 'Contabil');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (5, 'Casier');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (6, 'Analist');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (7, 'Reprezentant');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (8, 'Consultant');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (9, 'Programator');
+
+INSERT INTO FUNCTII (id_functie, denumire_functie) 
+VALUES (10, 'Administrator');
+
+--adaugare angajati 
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (1, 'Popescu', 'Andrei', TO_DATE('2020-01-15', 'YYYY-MM-DD'), 1, 1);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (2, 'Ionescu', 'Maria', TO_DATE('2019-07-22', 'YYYY-MM-DD'), 2, 2);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (3, 'Radu', 'Cristian', TO_DATE('2018-03-10', 'YYYY-MM-DD'), 3, 3);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (4, 'Stan', 'Elena', TO_DATE('2021-09-05', 'YYYY-MM-DD'), 4, 4);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (5, 'Dumitru', 'Alexandru', TO_DATE('2020-12-18', 'YYYY-MM-DD'), 5, 5);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (6, 'Gheorghe', 'Ioana', TO_DATE('2017-04-24', 'YYYY-MM-DD'), 6, 6);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (7, 'Petrescu', 'Mihai', TO_DATE('2022-02-10', 'YYYY-MM-DD'), 7, 7);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (8, 'Vasile', 'Ana', TO_DATE('2016-11-30', 'YYYY-MM-DD'), 8, 8);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (9, 'Tudor', 'George', TO_DATE('2019-05-20', 'YYYY-MM-DD'), 9, 9);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (10, 'Marin', 'Diana', TO_DATE('2021-08-15', 'YYYY-MM-DD'), 10, 10);
+
+
+--adaugare sali
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (1, 1, 101);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (2, 2, 102);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (3, 3, 103);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (4, 4, 104);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (5, 5, 105);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (6, 6, 106);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (7, 7, 107);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (8, 8, 108);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (9, 9, 109);
+
+INSERT INTO SALI (id_sala, id_locatie, id_film) 
+VALUES (10, 10, 110);
+
+--adaugare clienti 
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (1, 'Popa', 'Ioana');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (2, 'Ionescu', 'Andrei');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (3, 'Dumitrescu', 'Maria');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (4, 'Tudor', 'Cristian');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (5, 'Vasile', 'Ana');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (6, 'Georgescu', 'Mihai');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (7, 'Stan', 'Elena');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (8, 'Petrescu', 'Alexandra');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (9, 'Marin', 'Diana');
+
+INSERT INTO CLIENTI (id_client, nume_client, prenume_client) 
+VALUES (10, 'Constantinescu', 'Bogdan');
+
+-- adaugare bilete 
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (1, 25.50, 2, 101, 1);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (2, 30.00, 3, 102, 2);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (3, 20.00, 1, 103, 3);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (4, 22.50, 4, 104, 4);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (5, 28.00, 2, 105, 5);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (6, 18.00, 5, 106, 6);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (7, 24.00, 3, 107, 7);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (8, 19.00, 6, 108, 8);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (9, 26.50, 2, 109, 9);
+
+INSERT INTO BILETE (id_bilet, pret, cantitate, id_film, id_client) 
+VALUES (10, 27.00, 1, 110, 10);
+
+ 
+
+4.1.Comezi de actualizare
+--actualizare nume angajat cu id 4
+UPDATE angajati_m
+SET nume_angajat='Marinescu'
+WHERE id_ang=4
+ 
+
+--actualizare pret bilet pt filmul cu id 106
+UPDATE bilete 
+SET pret=25
+WHERE id_film=106;
+ 
+
+--actualizare prenume client cu id 9
+UPDATE clienti 
+SET prenume_client='Marina'
+WHERE id_client=9;
+ 
+
+--actualizare cod_postal pt locatie cu id ul egal cu id ul locatiei pe la adresa de pe strda mihai eminescu
+update locatii
+set cod_postal='098765'
+where id_locatie=(select id_locatie from locatii 
+where upper(adresa) like'%MIHAI EMINESCU%');
+ 
+--actualizare denumire functie pt functia cu id 6
+UPDATE functii
+SET denumire_functie='Specialist Marketing'
+WHERE id_functie=4;
+ 
+
+
+
+Comenzi de stergere
+--sa se stearga angajatul cu id =5
+delete from angajati 
+where id_ang=5;
+
+--anulare stergere
+Rollback;
+ 
+
+--sa se stearga biletul cu pret=20
+delete from bilete 
+where pret=20;
+  
+
+
+
+
+
+4.2.Comenzi cu jonctiuni
+--sa se afiseze angajatii care lucreaza in orasul Iasi
+
+select a.id_ang,a.nume_angajat,l.oras
+from angajati_m a, locatii l
+where a.id_locatie=l.id_locatie
+and oras='Iași';
+ 
+
+--afisare clienti care au cumparat bilet la Shutter Island
+select c.nume_client,b.id_client,b.id_film,f.denumire_film 
+from bilete b,filme f,clienti c
+where b.id_film=f.id_film
+and c.id_client=b.id_client
+and denumire_film='Shutter Island';
+ 
+
+--afisare sala si filmul care ruleaza in orasul Iasi
+select l.oras,s.id_sala,f.denumire_film 
+from locatii l, sali s, filme f
+where l.id_locatie=s.id_locatie
+and f.id_film=s.id_film
+and l.oras='Iași';
+ 
+
+--afisare venituri generate de fiecare film 
+select f.denumire_film, sum(b.pret*b.cantitate) as venit_total
+from filme f, bilete b 
+where f.id_film=b.id_film 
+group by f.denumire_film;
+ 
+
+--sa se afiseze nume clientilor care au cumparat mai mult de 2 bilete
+select c.id_client,c.nume_client, b.cantitate
+from clienti c, bilete b
+where c.id_client=b.id_client
+and b.cantitate>2;
+ 
+
+4.3.Comenzi grupari
+
+
+--calculare durata medie filme pe gen si gruparea lor in ordine descrescatoare
+
+select gen, round(avg(durata),2) as durata_medie
+from filme
+group by gen 
+order by durata_medie DESC;
+
+ 
+
+--numarul de angajati din fiecare locatie 
+
+select l.oras, count(a.id_ang) as nr_angajati
+from angajati_m a, locatii l
+where l.id_locatie=a.id_locatie
+group by l.oras;
+ 
+
+--numarul de bilete vandute pentru fiecare film pe gen 
+
+select f.denumire_film, f.gen, SUM(b.cantitate) nr_bilete
+from filme f, bilete b
+where f.id_film=b.id_film 
+group by f.denumire_film, f.gen;
+ 
+
+--nr de filme din fiecare locatie 
+
+select l.oras, count(s.id_film) as nr_filme
+from locatii l, sali s
+where l.id_locatie=s.id_locatie
+group by l.oras;
+ 
+
+--orasele unde se difuzeaza mai mult de un film 
+
+select l.oras, count(s.id_film) as nr_filme
+from locatii l, sali s
+where s.id_locatie=l.id_locatie
+group by l.oras
+having count(s.id_film)>1;
+
+ 
+
+
+
+
+4.4.Comenzi cu subcereri
+--sa se afiseze toate filmele care au o durată mai mare decât durata medie a filmelor 
+
+select denumire_film,durata
+from filme
+where durata>(select round(avg(durata),2) from filme);
+ 
+
+
+--sa se afiseze clientii care au cumparat bilete pentru filme din genul Drama
+
+select nume_client,prenume_client
+from clienti
+where id_client IN (select id_client
+from bilete
+where id_film IN (select id_film
+from filme
+where gen='Dramă'));
+ 
+
+
+--afisati locatiile unde se ruleaza filme mai scurte decat cel mai lung film din baza de date
+
+select oras,adresa
+from locatii
+where id_locatie in (select id_locatie 
+from sali
+where id_film in (select id_film
+from filme 
+where durata<(select max(durata) from filme)));
+
+ 
+
+--afisati numele si prenumele angajatilor care lucreaza in locatii unde se ruleaza filmul Arrival
+
+select nume_angajat, prenume_angajat
+from angajati_m
+where id_locatie in(select id_locatie
+from sali
+where id_film=(select id_film
+from filme
+where denumire_film='Arrival'));
+ 
+
+--afisati denumirile functiilor detinute de cel putin un angajat care a inceput sa lucreze dupa 01.01.2020
+
+select denumire_functie
+from functii
+where id_functie in ( select id_functie
+from angajati_m
+where data_angajarii>to_date('2020-01-01','YYYY-MM-DD'));
+ 
+
+--afișați clienții care au cumpărat bilete mai scumpe decât prețul mediu al unui bilet:
+
+select nume_client, prenume_client
+from clienti 
+where id_client in (select id_client
+from bilete
+where pret>(select round(avg(pret),2) from bilete));
+ 
+
+--Afișați angajații care lucrează în orașele unde se vând bilete pentru filmul 'Shutter Island':
+
+select nume_angajat, prenume_angajat
+from angajati_m
+where id_locatie in (select id_locatie
+from locatii
+where id_locatie in (select id_locatie
+from sali
+where id_film=(select id_film
+from filme
+where denumire_film='Shutter Island')));
+ 
+
+--Obțineți filmele cumpărate de clienți care au achiziționat mai mult de 3 bilete într-o singură comandă:
+
+select denumire_film
+from filme 
+where id_film in (select id_film 
+from bilete
+where cantitate>3);
+ 
+
+--Afișați numele angajaților care lucrează în locații unde filmele au o durată mai mică de 100 de minute:
+
+select nume_angajat, prenume_angajat
+from angajati_m
+where id_locatie in (select id_locatie
+from sali
+where id_film in(select id_film
+from filme
+where durata<100));
+ 
+
+--afisati denumirea fiecarui film si nr total de bilete vandute
+
+select f.denumire_film,
+(select count(*)
+from bilete b
+where b.id_film=f.id_film) as numar_bilete_vandute
+from filme f;
+ 
+
+
+CASE
+alter table angajati_m
+add (comision number(2,2));
+rollback;
+
+--sa se calculeze comisionul angajatilor astfel:
+--0.4% pt cei cu id_functie=1,5,6
+--0.3% pt cei cu id_functie=3
+--0.2% restul
+
+select nume_angajat,id_functie,
+(case when id_functie in (1,5,6) then 0.4
+when id_functie=3 then 0.3
+else 0.2 end) as comision
+from angajati_m;
+ 
+DECODE
+--sa se calculeze comisionul angajatilor astfel:
+--0.4% pt cei cu id_functie=1,5,6
+--0.3% pt cei cu id_functie=3
+--0.2% restul
+
+select nume_angajat, id_functie,
+decode(id_functie,1,0.4,5,0.4,6,0.4,3,0.3,0.2) comision
+from angajati_m;
+ 
+
+--sa se afiseze numele angajatului si data angajarii in format "mm/yy"
+
+select nume_angajat,data_angajarii, to_char(data_angajarii,'MM/YY') data
+from angajati_m;
+ 
+
+UNION
+-- sa se afiseze lista combinata fara duplicate cu toate orasele din locatiile unde lucreaza angajati si orasele din locatiile unde sunt sali
+
+select oras
+from locatii
+where id_locatie in (select id_locatie from angajati_m)
+union 
+select oras
+from locatii
+where id_locatie in (select id_locatie from sali);
+ 
+MINUS
+
+INSERT INTO LOCATII (id_locatie, adresa, oras, cod_postal) 
+VALUES (11, 'Str. Mihai Bravu', 'București', 010445);
+
+INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (11, 'Andreescu', 'Tania', TO_DATE('2019-09-21', 'YYYY-MM-DD'), 11, 2);
+
+--afisati locatiile in care lucreaza angajati dar nu exista sali
+select id_locatie, oras
+from locatii
+where id_locatie in (select id_locatie from angajati_m)
+minus
+select id_locatie, oras
+from locatii
+where id_locatie in (select id_locatie from sali);
+ 
+
+INTERSECT
+--afisati locatiile care au atat angajati cat si sali
+
+select id_locatie,oras
+from locatii
+where id_locatie in (select id_locatie from angajati_m)
+intersect
+select id_locatie,oras
+from locatii
+where id_locatie in (select id_locatie from sali);
+ 
+TABELA VIRTUALA
+--sa se realizeze o tabela virtuala cu toti angajatii din locatia 9
+ INSERT INTO ANGAJATI_m (id_ang, nume_angajat, prenume_angajat, data_angajarii, id_locatie, id_functie) 
+VALUES (12, 'Tanu', 'Sergiu', TO_DATE('2018-07-23', 'YYYY-MM-DD'), 9, 5);
+
+create or replace view angajati_loc_9
+as select * from angajati_m
+where id_functie=9;
+
+
+INDEX
+create index idx_id_film_bilete
+on  bilete (id_film);
+ 
+
